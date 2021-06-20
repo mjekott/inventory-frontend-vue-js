@@ -1,30 +1,33 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div v-if="loading">loading...</div>
+  <div v-if="!loading && !error" class="h-full">
+    <router-view />
   </div>
-  <router-view/>
+  <div v-if="!loading && error">Something went terribly wrong</div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { mapActions } from 'vuex';
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+export default {
+  name: 'App',
+  data() {
+    return {
+      loading: true,
+      error: false,
+    };
+  },
+  methods: {
+    ...mapActions(['initialLoad']),
+  },
+  async mounted() {
+    try {
+      await this.initialLoad();
+      this.loading = false;
+    } catch (error) {
+      this.error = true;
+      this.loading = false;
+    }
+  },
+};
+</script>
